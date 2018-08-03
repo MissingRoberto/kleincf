@@ -1,0 +1,40 @@
+---
+
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: kleincf
+  namespace: cf-system
+spec:
+  runLatest:
+    configuration:
+      build:
+        serviceAccountName: build-bot
+        source:
+          git:
+            url: https://github.com/jszroberto/kleincf
+            revision: master
+        template:
+          name: kaniko
+          arguments:
+          - name: IMAGE
+            value: &image jszroberto/kleincf
+      revisionTemplate:
+        metadata:
+          labels:
+            knative.dev/type: app
+        spec:
+          container:
+            image: *image
+            env:
+            - name: NAMESPACE
+              value: cf-default
+            - name: REPOSITORY
+              value: jszroberto
+            - name: REGISTRY_CREDENTIALS
+              value: build-bot
+            - name: SERVICE_ADDRESS
+              value: http://kleincf.cf-system.knative.mybluemix-test.net
+            - name: DOMAIN
+              value: cf-default.knative.mybluemix-test.net
+

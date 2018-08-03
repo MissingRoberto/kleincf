@@ -1,0 +1,27 @@
+---
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: kleincf
+  namespace: cf-system
+spec:
+  runLatest:
+    configuration:
+      revisionTemplate:
+        metadata:
+          labels:
+            knative.dev/type: app
+        spec:
+          container:
+            image: jszroberto/kleincf
+            env:
+            - name: NAMESPACE
+              value: cf-default
+            - name: REPOSITORY
+              value: jszroberto
+            - name: REGISTRY_CREDENTIALS
+              value: build-bot
+            - name: SERVICE_ADDRESS
+              value: http://kleincf.cf-system.knative.mybluemix-test.net
+            - name: DOMAIN
+              value: cf-default.knative.mybluemix-test.net

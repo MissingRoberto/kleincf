@@ -1,0 +1,34 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Configuration
+metadata:
+  name: buildpack-sample-app
+  namespace: default
+spec:
+  build:
+    serviceAccountName: build-bot
+    source:
+      git:
+        url: https://github.com/cloudfoundry-samples/dotnet-core-hello-world
+        revision: master
+    template:
+      name: buildpack
+      arguments:
+      - name: IMAGE
+        value: &image jszroberto/buildpack-sample-app
+  revisionTemplate:
+    metadata:
+      labels:
+        knative.dev/type: app
+    spec:
+      container:
+        image: *image
+---
+apiVersion: serving.knative.dev/v1alpha1
+kind: Route
+metadata:
+  name: buildpack-sample-app
+  namespace: default
+spec:
+  traffic:
+  - configurationName: buildpack-sample-app
+    percent: 100

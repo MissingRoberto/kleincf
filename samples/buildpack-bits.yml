@@ -1,0 +1,24 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: buildpack-bits-service-example
+  namespace: default
+spec:
+  runLatest:
+    configuration:
+      build:
+        serviceAccountName: build-bot
+        template:
+          name: buildpack-bits
+          arguments:
+          - name: URL
+            value: https://github.com/cloudfoundry-samples/dotnet-core-hello-world/archive/master.zip
+          - name: IMAGE
+            value: &image jszroberto/buildpack-bits-service-example
+      revisionTemplate:
+        metadata:
+          labels:
+            knative.dev/type: app
+        spec:
+          container:
+            image: *image
